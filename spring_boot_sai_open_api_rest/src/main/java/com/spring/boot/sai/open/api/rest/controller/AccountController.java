@@ -4,7 +4,6 @@ package com.spring.boot.sai.open.api.rest.controller;
 import com.spring.boot.sai.open.api.rest.auth.JwtUtil;
 import com.spring.boot.sai.open.api.rest.dto.AccountResponse;
 import com.spring.boot.sai.open.api.rest.model.entity.Account;
-import com.spring.boot.sai.open.api.rest.model.repository.AccountRepository;
 import com.spring.boot.sai.open.api.rest.model.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
-
 
     @GetMapping("/account.account")
     public ResponseEntity<AccountResponse> getAllAccounts(@RequestHeader("Access-Token") String token) {

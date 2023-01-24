@@ -2,7 +2,6 @@ package com.spring.boot.sai.open.api.rest.model.service.impl;
 
 import java.util.List;
 
-import com.spring.boot.sai.open.api.rest.dto.AccountResponse;
 import com.spring.boot.sai.open.api.rest.model.entity.Account;
 import com.spring.boot.sai.open.api.rest.model.repository.AccountRepository;
 import com.spring.boot.sai.open.api.rest.model.service.AccountService;

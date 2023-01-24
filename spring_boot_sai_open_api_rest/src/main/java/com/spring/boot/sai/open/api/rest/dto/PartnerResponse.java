@@ -1,16 +1,16 @@
 package com.spring.boot.sai.open.api.rest.dto;
 
-import com.spring.boot.sai.open.api.rest.model.entity.Account;
+import com.spring.boot.sai.open.api.rest.model.entity.Partner;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-
 @Getter
 @Setter
-public class AccountResponse {
+public class PartnerResponse {
     private int count;
-    private List<Account> results;
+    private List<Partner> results;
 
 }
+
