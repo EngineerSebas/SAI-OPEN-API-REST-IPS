@@ -18,7 +18,8 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public PartnerResponse getPartners(Filters partnerRequest) {
         List<String> filter = partnerRequest.getFilters().get(0);
-        Partner partner = partnerRepository.findShipto();
+        String xidentificationFilter = filter.get(2).replace("\"", "'");
+        Partner partner = partnerRepository.findPartnerByCode(xidentificationFilter);
         PartnerResponse partnerResponse = new PartnerResponse();
         partnerResponse.setCount(1);
         List<Partner> partners = new ArrayList<>();
