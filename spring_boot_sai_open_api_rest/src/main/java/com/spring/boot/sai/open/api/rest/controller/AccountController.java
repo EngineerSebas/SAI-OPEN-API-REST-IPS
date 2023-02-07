@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("api")
@@ -32,9 +34,18 @@ public class AccountController {
         }
         try {
             List<Account> accounts = accountService.getAllAccounts();
+            List<Account> newAccounts = new ArrayList<>();
+            for (Account account : accounts) {
+                String value = account.getCode();
+                float floatValue = Float.parseFloat(value);
+                String result = String.format(Locale.ROOT, "%.0f", floatValue);
+                account.setCode(result);
+                account.setName(account.getName().trim());
+                newAccounts.add(account);
+            }
             AccountResponse accountResponse = new AccountResponse();
-            accountResponse.setCount(accounts.size());
-            accountResponse.setResults(accounts);
+            accountResponse.setCount(newAccounts.size());
+            accountResponse.setResults(newAccounts);
             return ResponseEntity.ok(accountResponse);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -47,9 +58,14 @@ public class AccountController {
         }
         try {
             List<Account> accounts = accountService.getAllAccountsAnalyticCost();
+            List<Account> newAccounts = new ArrayList<>();
+            for (Account account : accounts) {
+                account.setName(account.getName().trim());
+                newAccounts.add(account);
+            }
             AccountResponse accountResponse = new AccountResponse();
-            accountResponse.setCount(accounts.size());
-            accountResponse.setResults(accounts);
+            accountResponse.setCount(newAccounts.size());
+            accountResponse.setResults(newAccounts);
             return ResponseEntity.ok(accountResponse);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreatePartnerResponse {
-    private int id;
+    private String id;
 }

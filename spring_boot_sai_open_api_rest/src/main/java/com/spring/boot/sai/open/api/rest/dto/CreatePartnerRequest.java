@@ -1,5 +1,13 @@
 package com.spring.boot.sai.open.api.rest.dto;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+
+@Getter
+@Setter
 public class CreatePartnerRequest {
     private Boolean is_company;
     private String name;
@@ -20,7 +28,7 @@ public class CreatePartnerRequest {
     private String lang;
     private Integer remaining_credit_amount;
     private Boolean is_doctor;
-    private Integer credit_limit;
+    private BigDecimal credit_limit;
     private String comment;
     private Boolean customer;
     private Boolean supplier;

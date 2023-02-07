@@ -11,22 +11,23 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-public class Cust implements Serializable {
+public class Shipto implements Serializable {
+
     @Id
     private String id_n;
     private String company;
-    private String company_extendidox;
+    private String primer_nombre;
+    private String segundo_nombre;
+    private String primer_apellido;
+    private String segundo_apellido;
+    private String company_extendido;
     private String addr1;
     private String phone1;
     private String phone2;
-    private String pais;
-    private String medico;
+    private String email;
     private BigDecimal creditlmt;
-    private String cliente;
-    private String proveedor;
+    private String comment1;
     private String city;
-    private String nit;
-    private String id_tipocartera;
 
     private static final long serialVersionUID = 1L;
 }

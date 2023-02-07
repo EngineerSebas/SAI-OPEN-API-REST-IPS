@@ -14,8 +14,7 @@ public class Account {
     private int id;
 
     private String name;
-
     @Id
-    private int code;
+    private String code;
 
 }
