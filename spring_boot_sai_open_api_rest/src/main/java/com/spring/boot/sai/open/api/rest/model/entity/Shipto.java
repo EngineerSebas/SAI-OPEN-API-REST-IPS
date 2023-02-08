@@ -15,6 +15,8 @@ public class Shipto implements Serializable {
 
     @Id
     private String id_n;
+    private Integer IDVEND;
+    private Integer succliente;
     private String company;
     private String primer_nombre;
     private String segundo_nombre;
@@ -25,6 +27,7 @@ public class Shipto implements Serializable {
     private String phone1;
     private String phone2;
     private String email;
+    private String email_fac_elec;
     private BigDecimal creditlmt;
     private String comment1;
     private String city;

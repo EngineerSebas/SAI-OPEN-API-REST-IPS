@@ -19,7 +19,7 @@ public class Tributaria implements Serializable {
     private String segundo_nombre;
     private String primer_apellido;
     private String segundo_apellido;
-    private Short tipo_contirbuyente;
+    private Short tipo_contribuyente;
     private Short tdoc;
     private static final long serialVersionUID = 1L;
 }

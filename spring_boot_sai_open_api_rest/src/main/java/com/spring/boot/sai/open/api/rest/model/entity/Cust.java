@@ -14,8 +14,9 @@ import java.math.BigDecimal;
 public class Cust implements Serializable {
     @Id
     private String id_n;
+    private Integer IDVEND;
     private String company;
-    private String company_extendidox;
+    private String company_extendido;
     private String addr1;
     private String phone1;
     private String phone2;
@@ -27,6 +28,10 @@ public class Cust implements Serializable {
     private String city;
     private String nit;
     private String id_tipocartera;
+    private String regimen;
+    private String inactivo;
+    private short zona;
+
 
     private static final long serialVersionUID = 1L;
 }
