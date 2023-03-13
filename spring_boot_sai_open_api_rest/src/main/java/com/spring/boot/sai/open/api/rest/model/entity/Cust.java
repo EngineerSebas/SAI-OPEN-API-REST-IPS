@@ -3,6 +3,7 @@ package com.spring.boot.sai.open.api.rest.model.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -14,7 +15,6 @@ import java.math.BigDecimal;
 public class Cust implements Serializable {
     @Id
     private String id_n;
-    private Integer IDVEND;
     private String company;
     private String company_extendido;
     private String addr1;
@@ -31,6 +31,7 @@ public class Cust implements Serializable {
     private String regimen;
     private String inactivo;
     private short zona;
+    private short idvend;
 
 
     private static final long serialVersionUID = 1L;
