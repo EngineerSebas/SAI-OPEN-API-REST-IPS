@@ -13,7 +13,7 @@ public class CreateAccountingEntryRequest {
 
     private List<LineItem> line_ids;
     private String name;
-    private Date date;
+    private String date;
     private String move_type;
     private int journal_id;
     private int journal_pacific_id;

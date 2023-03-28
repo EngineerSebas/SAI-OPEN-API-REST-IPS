@@ -10,6 +10,7 @@ import com.spring.boot.sai.open.api.rest.model.repository.GlenRepository;
 import com.spring.boot.sai.open.api.rest.model.repository.TipDocRepository;
 import com.spring.boot.sai.open.api.rest.model.repository.impl.ChairAccountRepositoryImpl;
 import com.spring.boot.sai.open.api.rest.model.service.AccountingService;
+import com.spring.boot.sai.open.api.rest.util.NumeroEnLetras;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +53,8 @@ public class TipDocController {
 
     @Autowired
     private TipDocRepository tipDocRepository;
-
+    @Autowired
+    private AcctRepository acttRepository;
     @Autowired
     private ChairAccountRepositoryImpl chairAccountRepositoryImpl;
     @PostMapping("/account.move")
@@ -69,28 +71,54 @@ public class TipDocController {
 
             Timestamp timestamp = new Timestamp(new Date().getTime());
             if(obteinTipDocByClass.equals("CC")) {
-                //chairAccountRepositoryImpl.insertarGlen(obteinTipDocByClass, Integer.valueOf(batch));
+                String id_n_local = createAccountingEntryRequest.getLine_ids().get(0).getPartner_pacific_ident().substring(3);
+                chairAccountRepositoryImpl.insertarGlen(obteinTipDocByClass, Integer.valueOf(batch),id_n_local);
                 for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
-                    //Queda la duda de sacar el acct y ccost
-                    int ccost = 0;
+                    int ccost = 1;
                     int debit = (int) createAccountingEntryRequest.getLine_ids().get(i).getDebit();
                     int credit = (int) createAccountingEntryRequest.getLine_ids().get(i).getCredit();
                     String id_n = createAccountingEntryRequest.getLine_ids().get(i).getPartner_pacific_ident().substring(3);
-                    chairAccountRepositoryImpl.insertarGlDet(id_n, 1000333, obteinTipDocByClass, Integer.valueOf(batch), ccost, debit, credit, timestamp);
-                    chairAccountRepositoryImpl.insertarGl(id_n,10087033,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,"PERIODO","DESCRIPCION");
+                    String period = createAccountingEntryRequest.getDate().substring(0,7);
+                    chairAccountRepositoryImpl.insertarGlDet(id_n, 53050101, obteinTipDocByClass, Integer.valueOf(batch), ccost, debit, credit, timestamp);
+                    chairAccountRepositoryImpl.insertarGl(id_n,53050101,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,period,"SERVICIO DE WEBSERVICES");
                 }
 
-            }else if(obteinTipDocByClass.equals("FP")) {
-                //chairAccountRepositoryImpl.insertarCarproen(obteinTipDocByClass, Integer.valueOf(batch),id_n,timestamp,100.000,timestamp,"observ",timestamp,"letras");
-                for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
-                    double debit =  createAccountingEntryRequest.getLine_ids().get(i).getDebit();
-                    double credit = createAccountingEntryRequest.getLine_ids().get(i).getCredit();
-                    String id_n = createAccountingEntryRequest.getLine_ids().get(i).getPartner_pacific_ident().substring(3);
-                    chairAccountRepositoryImpl.insertarCarprode(obteinTipDocByClass, Integer.valueOf(batch),id_n,1000333, timestamp,timestamp,"DESCRIPCION",credit,debit);
+            }else if (obteinTipDocByClass.equals("FP")) {
+                String id_n_local = createAccountingEntryRequest.getLine_ids().get(0).getPartner_pacific_ident().substring(3);
+                int sumDebit = 0;
+                int sumCredit = 0;
+                String period = createAccountingEntryRequest.getDate().substring(0,7);
+                int ccost = 1;
+                String TPOAPLCCION = "CC";
+                //String tipappbyacct = acttRepository.findAcctByAcct(String.valueOf(53050101));
+                int acct = 53050101;
 
+                // Primer ciclo para calcular la suma total de créditos y débitos
+                for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
+                    int debit = (int) createAccountingEntryRequest.getLine_ids().get(i).getDebit();
+                    int credit = (int) createAccountingEntryRequest.getLine_ids().get(i).getCredit();
+                    sumDebit += debit;
+                    sumCredit += credit;
+                }
+
+                if(sumCredit != sumDebit){
+                    return ResponseEntity.badRequest().build();
+                }
+                String sumCreditEnLetras = NumeroEnLetras.convertir(sumCredit);
+                chairAccountRepositoryImpl.insertarCarproen(obteinTipDocByClass, Integer.valueOf(batch),id_n_local,timestamp,(double)sumCredit,timestamp,"SERVICIO DE WEBSERVICES",timestamp,sumCreditEnLetras);
+                // Segundo ciclo para insertar registros
+                for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
+                    int debit = (int) createAccountingEntryRequest.getLine_ids().get(i).getDebit();
+                    int credit = (int) createAccountingEntryRequest.getLine_ids().get(i).getCredit();
+                    String id_n = createAccountingEntryRequest.getLine_ids().get(i).getPartner_pacific_ident().substring(3);
+                    chairAccountRepositoryImpl.insertarCarprode(obteinTipDocByClass, Integer.valueOf(batch),id_n,acct, timestamp,timestamp,"SERVICIO DE WEBSERVICES",(double) credit,(double) debit);
+                    chairAccountRepositoryImpl.insertarGl(id_n,acct,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,period,"SERVICIO DE WEBSERVICES");
+
+                    if(TPOAPLCCION.equals("CC") || TPOAPLCCION.equals("CP")){
+                        chairAccountRepositoryImpl.insertarCarpro(id_n, acct, obteinTipDocByClass, Integer.valueOf(batch), "SERVICIO DE WEBSERVICES", timestamp, ccost, period, sumCredit, credit, debit);
+                    }
                 }
             }
-
             if (createAccountingEntryResponse == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -101,28 +129,9 @@ public class TipDocController {
         }
     }
 
-    @Autowired
-    private AcctRepository acttRepository;
 
-    @Autowired
-    private GlenRepository glenRepository;
 
-    @PostMapping("/actt/{acct}")
-    public void getTipAcct(@PathVariable String acct) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date fecha = formatter.parse("2020-01-01");
 
-        //glenRepository.insertGlen(
-              //  "XLS",
-            //    "983",
-          //      fecha
-        //);
-        //date
 
-        Timestamp duedate = Timestamp.valueOf("2022-01-01 00:00:00");
-
-        chairAccountRepositoryImpl.insertarGlDet("800203189", 53050101, "C3", 77, 0, 50000000, 19265637, duedate);
-
-    }
 
 }

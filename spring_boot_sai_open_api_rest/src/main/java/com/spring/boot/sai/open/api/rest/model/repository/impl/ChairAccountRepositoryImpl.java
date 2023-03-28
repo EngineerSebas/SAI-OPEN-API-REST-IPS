@@ -15,13 +15,14 @@ public class ChairAccountRepositoryImpl {
     private EntityManager entityManager;
 
     @Transactional
-    public void insertarGlen(String tipo, Integer batchNumber) {
+    public void insertarGlen(String tipo, Integer batchNumber, String idn) {
         String insertQuery = "INSERT INTO GLEN (E, S, TIPO, BATCH, FECHA, USERNAME, REVISADO, REVISOR, FECHA_REVISION, EXPORTADA, ESTADO, DESCRIPCION, ID_N) " +
-                "VALUES (1, 1, :tipo, :batchNumber, :fecha, 'SAI', 'N', NULL, NULL, 'N', NULL, NULL, NULL)";
+                "VALUES (1, 1, :tipo, :batchNumber, :fecha, 'SAI', 'N', NULL, NULL, 'N', NULL, NULL, :idn)";
 
         Query insertNativeQuery = entityManager.createNativeQuery(insertQuery)
                 .setParameter("tipo", tipo)
                 .setParameter("batchNumber", batchNumber)
+                .setParameter("idn", idn)
                 .setParameter("fecha", new java.sql.Date(new Date().getTime()));
 
         insertNativeQuery.executeUpdate();
@@ -163,6 +164,32 @@ public class ChairAccountRepositoryImpl {
                 .setParameter("city", city)
                 .setParameter("succliente", succliente)
                 .setParameter("idvend", IDVEND);
+
+        insertNativeQuery.executeUpdate();
+    }
+    @Transactional
+    public void insertarCarpro(String id_n, int acct, String tipo, int batch, String descripcion, Date fecha,
+                               int ccost, String period, double saldo, double credit, double debit) {
+
+        String insertQuery = "INSERT INTO CARPRO (ID_N, ACCT, TIPO, BATCH, E, S, DESCRIPCION, FECHA, DUEDATE, INVC, DEPTO, CCOST, ACTIVIDAD, PERIOD, " +
+                "CONCIL, CRUCE, BENEF, ABONO, IDVEND, CONCEPTO, USUARIO, TIPO_IMP, NRO_IMP, CONCEPTO_IMP, SALDO_REPORTE, PROYECTO, BANCO, CHEQUE, " +
+                "CONCEPTO_PAGO, ID_TIPOCARTERA, COMENTARIO, CHEQUE_POSTF, FECHA_CHEQUE, VENCIMIENTO, DIAPAGO, SALDO, BASE, CREDIT, DEBIT, " +
+                "TASA_CAMBIO, SALDO_US, CREDITO_US, DEBITO_US, CUOTA, SHIPTO, FECHA_CONSIG, ESTADO_DEUDA, COD_FLUJOEFE, PORC_TASA, TIEMPO_MESES) " +
+                "VALUES (:id_n, :acct, :tipo, :batch, 1, 1, :descripcion, :fecha, :fecha, :batch, 0, :ccost, '', :period, NULL, :tipo, :id_n, NULL, 1, " +
+                "NULL, NULL, '', 0, 0, 0, '', NULL, NULL, NULL, NULL, NULL, 'false', NULL, NULL, 'false', :saldo, 0, :credit, :debit, 0, 0, 0, 0, 1, 0, NULL, NULL, NULL, 0, 0)";
+
+        Query insertNativeQuery = entityManager.createNativeQuery(insertQuery)
+                .setParameter("id_n", id_n)
+                .setParameter("acct", acct)
+                .setParameter("tipo", tipo)
+                .setParameter("batch", batch)
+                .setParameter("descripcion", descripcion)
+                .setParameter("fecha", fecha)
+                .setParameter("ccost", ccost)
+                .setParameter("period", period)
+                .setParameter("saldo", saldo)
+                .setParameter("credit", credit)
+                .setParameter("debit", debit);
 
         insertNativeQuery.executeUpdate();
     }
