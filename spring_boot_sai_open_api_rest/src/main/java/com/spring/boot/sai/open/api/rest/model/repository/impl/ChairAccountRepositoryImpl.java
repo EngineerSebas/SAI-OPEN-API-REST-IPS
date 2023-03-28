@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
@@ -29,7 +30,7 @@ public class ChairAccountRepositoryImpl {
     }
 
     @Transactional
-    public void insertarGlDet(String id_n, Integer acct, String tipo, Integer batch, Integer ccost, Integer debit, Integer credit, Date duedate) {
+    public void insertarGlDet(String id_n, Double acct, String tipo, Integer batch, Integer ccost, Integer debit, Integer credit, Date duedate) {
         String insertQuery = "INSERT INTO GLDET (CONTEO, ID_N, ACCT, E, S, TIPO, BATCH, CUOTA, INVC, DEPTO, CCOST, ACTIVIDAD, DEBIT, CREDIT, PERIOD, BASE, DESCRIPCION, CLOSING, CONCIL, CRUCE, DESTINO, DUEDATE, PROYECTO) " +
                 "VALUES ((SELECT COALESCE(MAX(CONTEO), 0) + 1 FROM GLDET), :id_n, :acct, 1, 1, :tipo, :batch, 0, :batch, 0, :ccost, '', :debit, :credit, '', 0, '', '', '', :tipo, 1, :duedate, '')";
 
@@ -47,7 +48,7 @@ public class ChairAccountRepositoryImpl {
     }
 
     @Transactional
-    public void insertarGl(String id_n, Integer acct, String tipo, Integer batch, Date fecha, Date duedate, Integer ccost, Integer credit, Integer debit, String period, String descripcion) {
+    public void insertarGl(String id_n, Double acct, String tipo, Integer batch, Date fecha, Date duedate, Integer ccost, Integer credit, Integer debit, String period, String descripcion) {
         String insertQuery = "INSERT INTO GL (ID_N, ACCT, E, S, TIPO, BATCH, FECHA, DUEDATE, INVC, DEPTO, CCOST, ACTIVIDAD, PERIOD, DESCRIPCION, CLOSING, CONCIL, CRUCE, USERNAME, DESTINO, PROYECTO, BASE, CREDIT, DEBIT, CUOTA, PRORRATEADO, ESTADO, MAYOR_VALOR, COD_FLUJOEFE, CONSEC_CARPRODE) " +
                 "VALUES (:id_n, :acct, 1, 1, :tipo, :batch, :fecha, :duedate, :batch, 0, :ccost, NULL, :period, :descripcion, 'False', 'False', :tipo, NULL, 1, NULL, 0, :credit, :debit, 1, 'N', NULL, NULL, NULL, NULL)";
 
@@ -68,7 +69,7 @@ public class ChairAccountRepositoryImpl {
     }
 
     @Transactional
-    public void insertarCarproen(String tipo, Integer batch, String id_n, Date fecha, Double total, Date fecha_hora, String observ, Date duedate, String letras) {
+    public void insertarCarproen(String tipo, int batch, String id_n, LocalDate fecha, Double total, String fecha_hora, String observ, LocalDate duedate, String letras) {
         String insertQuery = "INSERT INTO CARPROEN (E, S, TIPO, BATCH, ID_N, FECHA, TOTAL, USERNAME, FECHA_HORA, OBSERV, BANCO, CHEQUE, DUEDATE, LETRAS, IDVEND, SHIPTO, EXPORTADA, ENTREGADO, REVISADO, REVISOR, FECHA_REVISION, IMPRESO, DOC_FISICO, CHEQUE_POSTF, FECHA_CHEQUE, PROYECTO, SALDO_DEUDA, SALDO_DEUDA_ABONO, PONUMBER, INTERES_IMPLICITO, DETALLE, FECHA_CONTAB_CONSIG, DETERIORO_ESFA, CONCEPTO_NOTAFE, ENVIADO, CUFE, SUBTOTAL, SALESTAX, IMPCONSUMO, TOTAL_REAL, FECHA_RESPUESTA_DIAN, ID_BINARIO, SIN_CRUCE) " +
                 "VALUES (1, 1, :tipo, :batch, :id_n, :fecha, :total, 'SAI', :fecha_hora, :observ, '', '', :duedate, :letras, 1, 0, 'N', 'N', 'N', NULL, NULL, 'N', NULL, 'false', NULL, NULL, NULL, NULL, '', 'N', '', 'N', 'N', NULL, 'N', NULL, 0, 0, 0, 0, NULL, NULL, NULL)";
 
@@ -87,7 +88,7 @@ public class ChairAccountRepositoryImpl {
     }
 
     @Transactional
-    public void insertarCarprode(String tipo, Integer batch, String id_n, Integer acct, Date fecha, Date duedate, String descripcion, Double credit, Double debit) {
+    public void insertarCarprode(String tipo, Integer batch, String id_n, Double acct, Date fecha, Date duedate, String descripcion, Double credit, Double debit) {
         String insertQuery = "INSERT INTO CARPRODE (TIPO, BATCH, ID_N, ACCT, E, S, CRUCE, INVC, FECHA, DUEDATE, DPTO, CCOST, ACTIVIDAD, DESCRIPCION, DIAS, DESTINO, TIPO_REF, REFERENCIA, TIPO_IMP, NRO_IMP, CONCEPTO_IMP, BANCO, CHEQUE, PROYECTO, CONCEPTO_PAGO, ID_TIPOCARTERA, INVC_ENTERO, CHEQUE_POSTF, FECHA_CHEQUE, SALDO, CREDIT, TASA_CAMBIO, CREDITO_US, DEBITO_US, BASE, DEBIT, CUOTA, FECHA_CONSIG, FECHA_FACTURA, MAYOR_VALOR, VALOR_IMPUESTO, IMPORT, COD_FLUJOEFE, IDVEND, PORC_TASA, TIEMPO_MESES, PAGO_DISP) " +
                 "VALUES (:tipo, :batch, :id_n, :acct, 1, 1, :tipo, :batch, :fecha, :duedate, NULL, NULL, '', :descripcion, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', NULL, '', 0, 'false', NULL, 0, :credit, 0, 0, 0, 0, :debit, 1, NULL, NULL, NULL, NULL, 'N', 0, NULL, 0, 0, 'N')";
 
@@ -168,7 +169,7 @@ public class ChairAccountRepositoryImpl {
         insertNativeQuery.executeUpdate();
     }
     @Transactional
-    public void insertarCarpro(String id_n, int acct, String tipo, int batch, String descripcion, Date fecha,
+    public void insertarCarpro(String id_n, Double acct, String tipo, int batch, String descripcion, Date fecha,
                                int ccost, String period, double saldo, double credit, double debit) {
 
         String insertQuery = "INSERT INTO CARPRO (ID_N, ACCT, TIPO, BATCH, E, S, DESCRIPCION, FECHA, DUEDATE, INVC, DEPTO, CCOST, ACTIVIDAD, PERIOD, " +

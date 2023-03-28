@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -77,21 +79,19 @@ public class TipDocController {
                     int ccost = 1;
                     int debit = (int) createAccountingEntryRequest.getLine_ids().get(i).getDebit();
                     int credit = (int) createAccountingEntryRequest.getLine_ids().get(i).getCredit();
+                    double acct =  createAccountingEntryRequest.getLine_ids().get(i).getAccount_id();
                     String id_n = createAccountingEntryRequest.getLine_ids().get(i).getPartner_pacific_ident().substring(3);
-                    String period = createAccountingEntryRequest.getDate().substring(0,7);
-                    chairAccountRepositoryImpl.insertarGlDet(id_n, 53050101, obteinTipDocByClass, Integer.valueOf(batch), ccost, debit, credit, timestamp);
-                    chairAccountRepositoryImpl.insertarGl(id_n,53050101,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,period,"SERVICIO DE WEBSERVICES");
+                    String period = createAccountingEntryRequest.getDate().substring(0,7).replace("-", "");
+                    chairAccountRepositoryImpl.insertarGlDet(id_n, acct, obteinTipDocByClass, Integer.valueOf(batch), ccost, debit, credit, timestamp);
+                    chairAccountRepositoryImpl.insertarGl(id_n,acct,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,period,"SERVICIO DE WEBSERVICES");
                 }
 
             }else if (obteinTipDocByClass.equals("FP")) {
                 String id_n_local = createAccountingEntryRequest.getLine_ids().get(0).getPartner_pacific_ident().substring(3);
                 int sumDebit = 0;
                 int sumCredit = 0;
-                String period = createAccountingEntryRequest.getDate().substring(0,7);
+                String period = createAccountingEntryRequest.getDate().substring(0,7).replace("-", "");
                 int ccost = 1;
-                String TPOAPLCCION = "CC";
-                //String tipappbyacct = acttRepository.findAcctByAcct(String.valueOf(53050101));
-                int acct = 53050101;
 
                 // Primer ciclo para calcular la suma total de créditos y débitos
                 for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
@@ -102,18 +102,23 @@ public class TipDocController {
                 }
 
                 if(sumCredit != sumDebit){
+                    //Colocar mensaje de error asiento descuadrado
                     return ResponseEntity.badRequest().build();
+
                 }
                 String sumCreditEnLetras = NumeroEnLetras.convertir(sumCredit);
-                chairAccountRepositoryImpl.insertarCarproen(obteinTipDocByClass, Integer.valueOf(batch),id_n_local,timestamp,(double)sumCredit,timestamp,"SERVICIO DE WEBSERVICES",timestamp,sumCreditEnLetras);
+                LocalDate currentDate = LocalDate.now();
+                chairAccountRepositoryImpl.insertarCarproen(obteinTipDocByClass, Integer.valueOf(batch),id_n_local,currentDate, (double)sumCredit,currentDate.toString(),"SERVICIO DE WEBSERVICES",currentDate,sumCreditEnLetras);
+
                 // Segundo ciclo para insertar registros
                 for (int i = 0; i < createAccountingEntryRequest.getLine_ids().size(); i++) {
                     int debit = (int) createAccountingEntryRequest.getLine_ids().get(i).getDebit();
                     int credit = (int) createAccountingEntryRequest.getLine_ids().get(i).getCredit();
                     String id_n = createAccountingEntryRequest.getLine_ids().get(i).getPartner_pacific_ident().substring(3);
+                    double acct =  createAccountingEntryRequest.getLine_ids().get(i).getAccount_id();
                     chairAccountRepositoryImpl.insertarCarprode(obteinTipDocByClass, Integer.valueOf(batch),id_n,acct, timestamp,timestamp,"SERVICIO DE WEBSERVICES",(double) credit,(double) debit);
                     chairAccountRepositoryImpl.insertarGl(id_n,acct,obteinTipDocByClass,Integer.valueOf(batch),timestamp,timestamp,ccost,debit,credit,period,"SERVICIO DE WEBSERVICES");
-
+                    String TPOAPLCCION = acttRepository.findAcctByAcct(String.valueOf(acct));
                     if(TPOAPLCCION.equals("CC") || TPOAPLCCION.equals("CP")){
                         chairAccountRepositoryImpl.insertarCarpro(id_n, acct, obteinTipDocByClass, Integer.valueOf(batch), "SERVICIO DE WEBSERVICES", timestamp, ccost, period, sumCredit, credit, debit);
                     }
