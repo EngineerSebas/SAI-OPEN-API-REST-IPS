@@ -60,8 +60,10 @@ public class TipDocController {
     @Autowired
     private ChairAccountRepositoryImpl chairAccountRepositoryImpl;
     @PostMapping("/account.move")
-    public ResponseEntity<CreateAccountingEntryResponse> createAccountingEntry( @RequestBody CreateAccountingEntryRequest createAccountingEntryRequest) {
-
+    public ResponseEntity<CreateAccountingEntryResponse> createAccountingEntry(@RequestHeader("Access-Token") String token, @RequestBody CreateAccountingEntryRequest createAccountingEntryRequest) {
+        if (!jwtUtil.validateToken(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         try {
             CreateAccountingEntryResponse createAccountingEntryResponse = new CreateAccountingEntryResponse();
             String clase = createAccountingEntryRequest.getName().split("/")[0];
